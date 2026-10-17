@@ -74,10 +74,10 @@ Además, Mongoose genera automáticamente `_id`, `createdAt`, `updatedAt` y `__v
 
 ```json
 {
-  "empresa": "Hospital Santa Rosa",
+  "empresa": "Hospital X",
   "cargo": "Auxiliar de Facturación",
   "descripcion": "Gestión de facturación y soporte del sistema.",
-  "fechaInicio": "2023-01-15",
+  "fechaInicio": "2023-01-01",
   "fechaFin": null,
   "trabajoActual": true,
   "tecnologias": ["Node.js", "MongoDB"]
