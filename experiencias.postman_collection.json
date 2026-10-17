@@ -1,0 +1,175 @@
+{
+  "info": {
+    "name": "API Experiencias Profesionales - Hoja de Vida",
+    "description": "Colección completa del CRUD de experiencias profesionales (Express.js + MongoDB).\n\nOrden sugerido de prueba: Crear → Listar → Obtener por ID → Actualizar → Eliminar.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Crear experiencia (POST)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": { "raw": "{{baseUrl}}/api/experiencias", "host": ["{{baseUrl}}"], "path": ["api", "experiencias"] },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"empresa\": \"Hospital Santa Rosa\",\n  \"cargo\": \"Auxiliar de Facturación\",\n  \"descripcion\": \"Gestión de facturación y soporte del sistema.\",\n  \"fechaInicio\": \"2023-01-15\",\n  \"fechaFin\": null,\n  \"trabajoActual\": true,\n  \"tecnologias\": [\"Node.js\", \"MongoDB\"]\n}",
+          "options": { "raw": { "language": "json" } }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status es 201', () => pm.response.to.have.status(201));",
+              "pm.test('Respuesta ok = true', () => pm.expect(pm.response.json().ok).to.be.true);",
+              "pm.test('Devuelve el _id', () => pm.expect(pm.response.json().data._id).to.be.a('string'));",
+              "pm.environment.set('id', pm.response.json().data._id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Obtener todas las experiencias (GET)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{baseUrl}}/api/experiencias", "host": ["{{baseUrl}}"], "path": ["api", "experiencias"] }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status es 200', () => pm.response.to.have.status(200));",
+              "pm.test('Devuelve un conteo numérico', () => pm.expect(pm.response.json().count).to.be.a('number'));",
+              "pm.test('El data es un arreglo', () => pm.expect(pm.response.json().data).to.be.an('array'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Obtener experiencia por ID (GET)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/experiencias/{{id}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "experiencias", "{{id}}"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status es 200', () => pm.response.to.have.status(200));",
+              "pm.test('Devuelve empresa y cargo', () => {",
+              "  const d = pm.response.json().data;",
+              "  pm.expect(d).to.have.property('empresa');",
+              "  pm.expect(d).to.have.property('cargo');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Actualizar experiencia (PUT)",
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": {
+          "raw": "{{baseUrl}}/api/experiencias/{{id}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "experiencias", "{{id}}"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"cargo\": \"Facturadora Senior\",\n  \"descripcion\": \"Gestión de facturación, conciliaciones y soporte del sistema.\",\n  \"tecnologias\": [\"Node.js\", \"MongoDB\", \"Express\"]\n}",
+          "options": { "raw": { "language": "json" } }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status es 200', () => pm.response.to.have.status(200));",
+              "pm.test('El cargo fue actualizado', () => pm.expect(pm.response.json().data.cargo).to.eql('Facturadora Senior'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Eliminar experiencia (DELETE)",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/experiencias/{{id}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "experiencias", "{{id}}"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status es 200', () => pm.response.to.have.status(200));",
+              "pm.test('Mensaje de confirmación', () => pm.expect(pm.response.json().message).to.include('eliminada'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Caso inválido: crear sin empresa (debe fallar 400)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": { "raw": "{{baseUrl}}/api/experiencias", "host": ["{{baseUrl}}"], "path": ["api", "experiencias"] },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"cargo\": \"Sin empresa\",\n  \"fechaInicio\": \"2023-01-15\"\n}",
+          "options": { "raw": { "language": "json" } }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status es 400 (validación)', () => pm.response.to.have.status(400));",
+              "pm.test('ok = false', () => pm.expect(pm.response.json().ok).to.be.false);"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
